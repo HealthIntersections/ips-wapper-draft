@@ -1,0 +1,67 @@
+{
+  "format" : "ips-wrapper/1",
+  "description" : "IPS From Good Health Clinic",
+
+  // the document will contain either an encrypted content, which is a JWE encrypted string
+  // tied to a passphrase provided by a user. When decrypted, it is another .zip with a metadata file 
+  // that is not encryoted
+  "encrypted" : "{jwe}", 
+
+  // an IPS wrapper actually may contain more than one version of the same document. In general, 
+  // 1-3 versions are expected:
+  // 
+  // * The original source produced by a clinical system 
+  // * A revised version produced by a patient portal (e.g. national portal) doing translations etc
+  // * a patient revision adding a patient comments section 
+  //
+  // All three are provided for traceability  
+  "versions" : [{
+    "source" : "5cbde460-661e-4c7b-8fd9-a993aaee8d14.json",
+
+    "kind" : "original", // this is the original IPS produced by the authoring application
+    // possible kinds:
+    // * original: The originally produced IPS
+    // * transform: A post-production transform of the IPS. (see below for transform details)
+    // * annotated: The same IPS, but with annotations added (usually by a patient, but it doesn't have to be)
+
+    "agent" : "Good Health Clinic System",
+    "signature" : {
+      // if a signature is provided, it will be a SHC verification token, but the bundle will not be provided; it is taken as 
+      // a direct reference to the source instead (todo: work with the SHC authors to describe this formally)
+    }
+  },{
+    "source" : "5cbde460-661e-4c7b-8fd9-a993aaee8d14.json",
+    "kind" : "transform", // this is the original IPS produced by the authoring application
+    "agent" : "Erewhon National Clinical Services",
+    "transform" : {
+      "source" : "5cbde460-661e-4c7b-8fd9-a993aaee8d14.json",
+      "action" : ["recode", "shrink"]
+      // possible transforms:
+      //  recode - original codes were changed to internationally conformant codes
+      //  re-id - the resource identifies were changed (to align to a secondary data repository)
+      //  translate - the language was translated (where possible)
+      //  shrink - attachments were reduced in size (usually by reducing their resolution)
+      //  annotate - author added an annotation section
+    }
+  },{
+    "source" : "60ec71ea-f260-11ed-a05b-0242ac120003.json",
+    "kind" : "patient-annotated", // patient added some notes
+    "transform" : {
+      "source" : "3f7e4376-f260-11ed-a05b-0242ac120003.json",
+      "action" : ["annotate"]
+    },
+    "agent" : "Acme Patient Manager (IOS/10.3.4)"
+  }],
+  "attachments" : [{
+    "source" : "bb6ccd7c-f260-11ed-a05b-0242ac120003.png",
+    "kind" : "icon",
+    // * icon: an image of size 32x32 or 64x64 that is recommended to use when displaying this IPS in a list of known IPS documents
+    // * brand: a bundle that represents the brand of the source (as defined by smart-app-launch)
+    // * author image: a plain text or image of the content that the original author saw and signed (for legal non-repudiation reasons)
+    // * attachment: An attachment to the IPS (image, video, pdf, etc)
+    // * style-sheet: A CSS stylesheet that *may* be used when rendering the IPS 
+    "mimetype" : "application/png"
+  }]
+}
+  
+
